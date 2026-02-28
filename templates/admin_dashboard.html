@@ -4,6 +4,35 @@
     <h2>Admin Dashboard</h2>
     <p>Welcome Admin {{ email }}</p>
 
-    <br>
+    <h3>All Users</h3>
+
+    <table class="user-table">
+        <tr>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for email, data in users.items() %}
+        <tr>
+            <td>{{ email }}</td>
+            <td>{{ data.role }}</td>
+            <td>
+                {% if data.is_active %}
+                    Active
+                {% else %}
+                    Inactive
+                {% endif %}
+            </td>
+            <td>
+                <a href="/change_role/{{ email }}">Change Role</a> |
+                <a href="/toggle_status/{{ email }}">Toggle Status</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <br><br>
     <a href="/logout">Logout</a>
 </div>
