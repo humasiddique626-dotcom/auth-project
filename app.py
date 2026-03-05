@@ -3,18 +3,19 @@ from flask import Flask, render_template, request, redirect, session
 app = Flask(__name__)
 app.secret_key = "huma_secret"
 
-# Temporary in-memory database
+# Temporary databases
 users = {}
+artworks = []
 
-# ---------------- HOME ----------------
+# Home Page
 @app.route("/")
 def home():
     return render_template("home.html")
 
-
-# ---------------- REGISTER ----------------
-@app.route("/register", methods=["GET", "POST"])
+# Register
+@app.route("/register", methods=["GET","POST"])
 def register():
+
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
@@ -31,75 +32,134 @@ def register():
     return render_template("register.html")
 
 
-# ---------------- LOGIN ----------------
-@app.route("/login", methods=["GET", "POST"])
+# Login
+@app.route("/login", methods=["GET","POST"])
 def login():
+
     if request.method == "POST":
+
         email = request.form["email"]
         password = request.form["password"]
 
-        if email in users:
-            if users[email]["password"] == password:
-                if users[email]["is_active"]:
+        if email in users and users[email]["password"] == password:
 
-                    session["user"] = email
-                    session["role"] = users[email]["role"]
+            session["user"] = email
+            session["role"] = users[email]["role"]
 
-                    if session["role"] == "admin":
-                        return redirect("/admin")
-                    else:
-                        return redirect("/user")
-
-                else:
-                    return "Account is deactivated"
+            if session["role"] == "admin":
+                return redirect("/admin")
+            else:
+                return redirect("/user")
 
         return "Invalid Credentials"
 
     return render_template("login.html")
 
 
-# ---------------- USER DASHBOARD ----------------
+# User Dashboard
 @app.route("/user")
 def user_dashboard():
+
     if "user" in session and session["role"] == "user":
         return render_template("user_dashboard.html", email=session["user"])
+
     return redirect("/login")
 
 
-# ---------------- ADMIN DASHBOARD ----------------
+# Admin Dashboard
 @app.route("/admin")
 def admin_dashboard():
+
     if "user" in session and session["role"] == "admin":
         return render_template("admin_dashboard.html", email=session["user"], users=users)
+
     return redirect("/login")
 
 
-# ---------------- CHANGE ROLE ----------------
+# Change Role
 @app.route("/change_role/<email>")
 def change_role(email):
-    if "user" in session and session["role"] == "admin":
-        if email in users:
-            if users[email]["role"] == "user":
-                users[email]["role"] = "admin"
-            else:
-                users[email]["role"] = "user"
+
+    if session.get("role") != "admin":
+        return "Unauthorized"
+
+    if users[email]["role"] == "user":
+        users[email]["role"] = "admin"
+    else:
+        users[email]["role"] = "user"
 
     return redirect("/admin")
 
 
-# ---------------- TOGGLE STATUS ----------------
+# Toggle User Status
 @app.route("/toggle_status/<email>")
 def toggle_status(email):
-    if "user" in session and session["role"] == "admin":
-        if email in users:
-            users[email]["is_active"] = not users[email]["is_active"]
+
+    if session.get("role") != "admin":
+        return "Unauthorized"
+
+    users[email]["is_active"] = not users[email]["is_active"]
 
     return redirect("/admin")
 
 
-# ---------------- LOGOUT ----------------
+# =============================
+# ARTWORK MANAGEMENT MODULE
+# =============================
+
+# View Artworks
+@app.route("/artworks")
+def artworks_page():
+
+    if session.get("role") != "admin":
+        return "Unauthorized"
+
+    return render_template("artworks.html", artworks=artworks)
+
+
+# Add Artwork
+@app.route("/add_artwork", methods=["GET","POST"])
+def add_artwork():
+
+    if session.get("role") != "admin":
+        return "Unauthorized"
+
+    if request.method == "POST":
+
+        title = request.form["title"]
+        artist = request.form["artist"]
+        price = request.form["price"]
+
+        artwork = {
+            "title": title,
+            "artist": artist,
+            "price": price,
+            "sold": False
+        }
+
+        artworks.append(artwork)
+
+        return redirect("/artworks")
+
+    return render_template("add_artwork.html")
+
+
+# Delete Artwork
+@app.route("/delete_artwork/<int:index>")
+def delete_artwork(index):
+
+    if session.get("role") != "admin":
+        return "Unauthorized"
+
+    artworks.pop(index)
+
+    return redirect("/artworks")
+
+
+# Logout
 @app.route("/logout")
 def logout():
+
     session.clear()
     return redirect("/")
 

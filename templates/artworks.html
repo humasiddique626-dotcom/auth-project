@@ -1,0 +1,39 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<div class="container">
+
+<h2>Artwork List</h2>
+
+<a class="btn" href="/add_artwork">Add New Artwork</a>
+
+<table class="user-table">
+
+<tr>
+<th>Title</th>
+<th>Artist</th>
+<th>Price</th>
+<th>Action</th>
+</tr>
+
+{% for artwork in artworks %}
+
+<tr>
+
+<td>{{ artwork.title }}</td>
+<td>{{ artwork.artist }}</td>
+<td>{{ artwork.price }}</td>
+
+<td>
+<a class="delete-btn" href="/delete_artwork/{{ loop.index0 }}">Delete</a>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<br>
+<a href="/admin">Back to Dashboard</a>
+
+</div>

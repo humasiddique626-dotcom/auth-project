@@ -55,3 +55,43 @@ a {
 .user-table th {
     background-color: #f2f2f2;
 }
+
+.container{
+    width:70%;
+    margin:auto;
+    text-align:center;
+}
+
+.user-table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:20px;
+}
+
+.user-table th{
+    background:#2c3e50;
+    color:white;
+    padding:10px;
+}
+
+.user-table td{
+    border:1px solid #ddd;
+    padding:10px;
+}
+
+.user-table tr:nth-child(even){
+    background:#f2f2f2;
+}
+
+.btn{
+    background:#3498db;
+    color:white;
+    padding:8px 15px;
+    text-decoration:none;
+    border-radius:5px;
+}
+
+.delete-btn{
+    color:red;
+    text-decoration:none;
+}
