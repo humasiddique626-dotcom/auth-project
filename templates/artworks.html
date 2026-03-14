@@ -34,6 +34,41 @@
 </table>
 
 <br>
+<h2>Artwork Gallery</h2>
+
+<form method="GET">
+
+<input type="text" name="search" placeholder="Search artwork">
+
+<input type="text" name="artist" placeholder="Artist name">
+
+<button type="submit">Search</button>
+
+</form>
+
+<hr>
+
+<div class="grid">
+
+{% for art in artworks %}
+
+<div class="card">
+
+<img src="{{ art.image }}" width="200">
+
+<h3>{{ art.title }}</h3>
+
+<p>Artist: {{ art.artist }}</p>
+
+<p>Price: ₹{{ art.price }}</p>
+
+<a href="/artwork/{{ art.id }}">View Details</a>
+
+</div>
+
+{% endfor %}
+
+</div>
 <a href="/admin">Back to Dashboard</a>
 
 </div>
