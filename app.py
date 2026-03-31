@@ -94,12 +94,14 @@ def checkout():
         total = sum(int(item["price"]) for item in cart)
 
         orders.append({
+        "id":len(orders),
         "name":name,
         "address":address,
         "email":email,
         "items":cart.copy(),
         "total":total,
-        "status":"Success"
+        "payment_status":"Success",
+        "delivery_status":"Processing"
         })
 
         cart.clear()
@@ -111,6 +113,26 @@ def checkout():
 @app.route("/order_success")
 def order_success():
     return render_template("order_success.html")
+
+@app.route("/admin/sales")
+def admin_sales():
+    if session.get("role") != "admin":
+        return "Unauthorized"
+    return render_template("sales.html", orders=orders)
+
+@app.route("/update_status/<int:id>")
+def update_status(id):
+    if session.get("role") != "admin":
+        return "Unauthorized"
+
+    order = orders[id]
+
+    if order["delivery_status"] == "Processing":
+        order["delivery_status"] = "Shipped"
+    elif order["delivery_status"] == "Shipped":
+        order["delivery_status"] = "Delivered"
+
+    return redirect("/admin/sales")
 
 @app.route("/register", methods=["GET","POST"])
 def register():
