@@ -1,0 +1,43 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<div class="container">
+
+<h2>Your Cart 🛒</h2>
+
+{% if cart|length == 0 %}
+<p>Your cart is empty</p>
+{% else %}
+
+<table class="user-table">
+
+<tr>
+<th>Title</th>
+<th>Price</th>
+<th>Action</th>
+</tr>
+
+{% for item in cart %}
+
+<tr>
+<td>{{ item.title }}</td>
+<td>₹{{ item.price }}</td>
+
+<td>
+<a class="delete-btn" href="/remove_from_cart/{{ loop.index0 }}">Remove</a>
+</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+<h3>Total: ₹{{ total }}</h3>
+
+<a class="btn" href="/checkout">Proceed to Checkout</a>
+
+{% endif %}
+
+<br><br>
+<a href="/">Continue Shopping</a>
+
+</div>

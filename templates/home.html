@@ -1,9 +1,59 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <div class="container">
-    <h2>Welcome</h2>
-    <p>Please choose an option</p>
 
-    <a href="/register">Register</a><br><br>
-    <a href="/login">Login</a>
+<h2>Welcome to Artwork Gallery 🎨</h2>
+
+<p>Please choose an option</p>
+
+<a href="/register">Register</a> |
+<a href="/login">Login</a> |
+<a href="/cart">View Cart 🛒</a>
+
+<hr>
+
+<h3>Search Artworks</h3>
+
+<form method="GET">
+
+<input type="text" name="search" placeholder="Search by title">
+
+<input type="text" name="artist" placeholder="Search by artist">
+
+<input type="text" name="category" placeholder="Category">
+
+<button type="submit">Search</button>
+
+</form>
+
+<hr>
+
+<h3>Available Artworks</h3>
+
+<div class="grid">
+
+{% for art in artworks %}
+
+<div class="card">
+
+<img src="{{ art.image }}" width="200">
+
+<h4>{{ art.title }}</h4>
+
+<p>Artist: {{ art.artist }}</p>
+
+<p>Category: {{ art.category }}</p>
+
+<p>Price: ₹{{ art.price }}</p>
+
+<a href="/artwork/{{ art.id }}">View Details</a><br><br>
+
+<a class="btn" href="/add_to_cart/{{ art.id }}">Add to Cart</a>
+
+</div>
+
+{% endfor %}
+
+</div>
+
 </div>

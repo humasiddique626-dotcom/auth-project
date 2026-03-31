@@ -5,6 +5,9 @@ app.secret_key = "huma_secret"
 
 users = {}
 
+cart = []
+orders = []
+
 artworks = [
 {
 "id":0,
@@ -64,6 +67,51 @@ def artwork_detail(id):
             return render_template("artwork_detail.html", artwork=art)
     return "Artwork not found"
 
+@app.route("/add_to_cart/<int:id>")
+def add_to_cart(id):
+    for art in artworks:
+        if art["id"] == id:
+            cart.append(art)
+    return redirect("/cart")
+
+@app.route("/cart")
+def view_cart():
+    total = sum(int(item["price"]) for item in cart)
+    return render_template("cart.html", cart=cart, total=total)
+
+@app.route("/remove_from_cart/<int:index>")
+def remove_from_cart(index):
+    cart.pop(index)
+    return redirect("/cart")
+
+@app.route("/checkout", methods=["GET","POST"])
+def checkout():
+    if request.method == "POST":
+        name = request.form["name"]
+        address = request.form["address"]
+        email = request.form["email"]
+
+        total = sum(int(item["price"]) for item in cart)
+
+        orders.append({
+        "name":name,
+        "address":address,
+        "email":email,
+        "items":cart.copy(),
+        "total":total,
+        "status":"Success"
+        })
+
+        cart.clear()
+
+        return redirect("/order_success")
+
+    return render_template("checkout.html")
+
+@app.route("/order_success")
+def order_success():
+    return render_template("order_success.html")
+
 @app.route("/register", methods=["GET","POST"])
 def register():
     if request.method == "POST":
@@ -98,7 +146,6 @@ def login():
 
             if session["role"] == "admin":
                 return redirect("/admin")
-
             else:
                 return redirect("/user")
 
@@ -115,18 +162,11 @@ def user_dashboard():
 @app.route("/admin")
 def admin_dashboard():
     if "user" in session and session["role"] == "admin":
-
-        return render_template(
-        "admin_dashboard.html",
-        email=session["user"],
-        users=users
-        )
-
+        return render_template("admin_dashboard.html", email=session["user"], users=users)
     return redirect("/login")
 
 @app.route("/change_role/<email>")
 def change_role(email):
-
     if session.get("role") != "admin":
         return "Unauthorized"
 
@@ -139,7 +179,6 @@ def change_role(email):
 
 @app.route("/toggle_status/<email>")
 def toggle_status(email):
-
     if session.get("role") != "admin":
         return "Unauthorized"
 
@@ -149,20 +188,16 @@ def toggle_status(email):
 
 @app.route("/artworks")
 def artworks_page():
-
     if session.get("role") != "admin":
         return "Unauthorized"
-
     return render_template("artworks.html", artworks=artworks)
 
 @app.route("/add_artwork", methods=["GET","POST"])
 def add_artwork():
-
     if session.get("role") != "admin":
         return "Unauthorized"
 
     if request.method == "POST":
-
         title = request.form["title"]
         artist = request.form["artist"]
         price = request.form["price"]
@@ -185,12 +220,10 @@ def add_artwork():
 
 @app.route("/delete_artwork/<int:id>")
 def delete_artwork(id):
-
     if session.get("role") != "admin":
         return "Unauthorized"
 
     artworks.pop(id)
-
     return redirect("/artworks")
 
 @app.route("/logout")

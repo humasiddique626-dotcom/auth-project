@@ -1,0 +1,25 @@
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<div class="container">
+
+<h2>Checkout 💳</h2>
+
+<form method="POST">
+
+<label>Full Name</label><br>
+<input type="text" name="name" required><br><br>
+
+<label>Address</label><br>
+<input type="text" name="address" required><br><br>
+
+<label>Email</label><br>
+<input type="email" name="email" required><br><br>
+
+<button class="btn" type="submit">Pay Now</button>
+
+</form>
+
+<br>
+<a href="/cart">Back to Cart</a>
+
+</div>
